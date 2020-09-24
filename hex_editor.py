@@ -4,10 +4,10 @@ from random import randint
 class HexEditor(tk.Toplevel):
 	def __init__(self, parent=None):
 		super().__init__(master=parent)
-		
+
 		self.tests = [
 			{"asm": ["mov bx, 0417h", "mov bx,0417h"], "dasm": ("BB", "17", "04")},
-			{"asm": ["xor ax, ax", "xor ax,ax"], "dasm": ("33", "C0")},	
+			{"asm": ["xor ax, ax", "xor ax,ax"], "dasm": ("33", "C0")},
 			{"asm": "pop ss", "dasm": ["17"]},
 			{"asm": "int 21h", "dasm": ("CD", "21")},
 			{"asm": ["mov ax, 4c00h", "mov ax,4c00h"], "dasm": ("B8", "00", "4C")},
@@ -47,10 +47,10 @@ class HexEditor(tk.Toplevel):
 		{"asm": "add al, 30h", "dasm": ("04", "30")},
 		{"asm": "add al, 40h", "dasm": ("04", "40")},
 		{"asm": "add al, 5h", "dasm": ("04", "05")},
-		
+
 		{"asm": "retf", "dasm": ["CB"]}
 		]
-		
+
 		self.screen_height = self.winfo_screenheight()
 		self.resizable(False, False)
 		self.prev_selected = (None, None)
@@ -58,10 +58,10 @@ class HexEditor(tk.Toplevel):
 		#self.create_dump()
 		self.generate_test()
 		self._build_ui()
-		
+
 	def generate_ans_p1(self):
 		ans = []
-		ans += (65535, 0) 
+		ans += (65535, 0)
 		ans.append([self.header[0x19] + self.header[0x18] + 'H', \
 					'0X' + self.header[0x19] + self.header[0x18]])
 		ans += (1, 0x20)
@@ -93,17 +93,17 @@ class HexEditor(tk.Toplevel):
 
 		canvas = tk.Canvas(self)
 		scrollbar = tk.Scrollbar(self, orient='vertical', command=canvas.yview)
-		
+
 		scrollbar.pack(side='right', fill='y')
-		canvas.pack(side='right', expand=True, fill='both')		
+		canvas.pack(side='right', expand=True, fill='both')
 
 		table = tk.Frame(canvas)
 		canvas.create_window((0, 0), window=table)
 		canvas.bind('<Configure>', lambda event: canvas.configure(scrollregion=canvas.bbox('all')))
 		canvas.configure(yscrollcommand = scrollbar.set)
-	
+
 		self._widgets = []
-		
+
 		for column in range(16):
 			label = tk.Label(table, text='{:02X}'.format(column), borderwidth=0, anchor=tk.W, justify=tk.LEFT, fg='blue')
 			label.grid(row=0, column=column+1, sticky="nsew", padx=3)
@@ -124,7 +124,7 @@ class HexEditor(tk.Toplevel):
 		for row in range(len(self.dump) // 16):
 			for column in range(16):
 				self._widgets[row][column+1].bind("<Button-1>", lambda event, q=row, p=column+1: self._select_byte(q, p))
-				#self._widgets[row][column].bind("<Left>", lambda event, q=row, p=column: self._move_left(q, p))
+				self._widgets[row][column].bind("<Left>", lambda event, q=row, p=column: self._move_left(q, p))
 
 	def _move_left(self, q, p):
 		print(q, p)
@@ -143,23 +143,24 @@ class HexEditor(tk.Toplevel):
 		print(self.prev_selected)
 
 	def _select_byte(self, q, p):
-		self._widgets[q][p].focus_set()
-		self._widgets[q][p].config(fg='red')
-		self.binary_byte['text'] = format(int('0x' + self._widgets[q][p]['text'], 16), '08b')
-		if p + 1 == 17:
-			self.next_binary_byte['text'] = format(int('0x' + self._widgets[q+1][1]['text'], 16), '08b')
-		else:
-			self.next_binary_byte['text'] = format(int('0x' + self._widgets[q][p+1]['text'], 16), '08b')
-		if self.prev_selected != (None, None):
-			self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
-		self.prev_selected = (q, p)
+		if self.prev_selected != (q, p):
+			self._widgets[q][p].focus_set()
+			self._widgets[q][p].config(fg='red')
+			self.binary_byte['text'] = format(int('0x' + self._widgets[q][p]['text'], 16), '08b')
+			if p + 1 == 17:
+				self.next_binary_byte['text'] = format(int('0x' + self._widgets[q+1][1]['text'], 16), '08b')
+			else:
+				self.next_binary_byte['text'] = format(int('0x' + self._widgets[q][p+1]['text'], 16), '08b')
+			if self.prev_selected != (None, None):
+				self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
+			self.prev_selected = (q, p)
 
 	def str_to_int(self, s):
 		return int('0x' + s, 16)
 
 	def add_zero_bytes(self, count):
 		self.dump += tuple('00' for _ in range(count))
-	
+
 	def add_rand_bytes(self, count):
 		self.dump += tuple(format(randint(100, 200), 'X') for _ in range(count))
 
@@ -211,7 +212,7 @@ class HexEditor(tk.Toplevel):
 		self.commands += self.moves[-1]
 		self.dump += self.moves[-1]["dasm"]
 		self.add_rand_bytes(60)
-		
+
 	def generate_test(self):
 		self.header = []
 		self.dump = []
