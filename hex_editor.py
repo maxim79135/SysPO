@@ -123,36 +123,79 @@ class HexEditor(tk.Toplevel):
 
 		for row in range(len(self.dump) // 16):
 			for column in range(16):
-				self._widgets[row][column+1].bind("<Button-1>", lambda event, q=row, p=column+1: self._select_byte(q, p))
-				self._widgets[row][column].bind("<Left>", lambda event, q=row, p=column: self._move_left(q, p))
+				self._widgets[row][column+1].bind("<Button-1>", lambda event, q=row, p=column + 1: self._select_byte(q, p))
+				self._widgets[row][column+1].bind("<Left>", lambda event, q=row, p=column + 1: self._move_left(q, p))
+				self._widgets[row][column+1].bind("<Right>", lambda event, q=row, p=column + 1: self._move_right(q, p))
+				self._widgets[row][column+1].bind("<Up>", lambda event, q=row, p=column + 1: self._move_up(q, p))
+				self._widgets[row][column+1].bind("<Down>", lambda event, q=row, p=column + 1: self._move_down(q, p))
+
+	def _move_down(self, q, p):
+		if q != len(self._widgets) - 1:
+			self._widgets[q + 1][p].config(fg='red')
+			self._widgets[q + 1][p].focus_set()
+			if self.prev_selected != (None, None):
+				self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
+			self._update_information_bytes(q + 1, p)
+			self.prev_selected = (q + 1, p)
+
+	def _move_up(self, q, p):
+		if q != 0:
+			self._widgets[q - 1][p].config(fg='red')
+			self._widgets[q - 1][p].focus_set()
+			if self.prev_selected != (None, None):
+				self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
+			self._update_information_bytes(q - 1, p)
+			self.prev_selected = (q - 1, p)
+
+	def _move_right(self, q, p):
+		if (q, p) != (len(self._widgets) - 1, 16):
+			if p != 16:
+				self._widgets[q][p + 1].config(fg='red')
+				_q = q
+				_p = p + 1
+			else:
+				self._widgets[q + 1][1].config(fg='red')
+				_q = q + 1
+				_p = 1
+			self._widgets[_q][_p].focus_set()
+			if self.prev_selected != (None, None):
+				self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
+			self._update_information_bytes(_q, _p)
+			self.prev_selected = (_q, _p)
 
 	def _move_left(self, q, p):
-		print(q, p)
-		if p > 1:
-			self._widgets[q][p - 1].config(fg='red')
-			_q = q
-			_p = p - 1
+		if (q, p) != (0, 1):
+			if p != 1:
+				self._widgets[q][p - 1].config(fg='red')
+				_q = q
+				_p = p - 1
+			else:
+				self._widgets[q - 1][16].config(fg='red')
+				_q = q - 1
+				_p = 16
+			self._widgets[_q][_p].focus_set()
+			if self.prev_selected != (None, None):
+				self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
+			self._update_information_bytes(_q, _p)
+			self.prev_selected = (_q, _p)
+
+	def _update_information_bytes(self, q, p):
+		self.binary_byte['text'] = format(int('0x' + self._widgets[q][p]['text'], 16), '08b')
+		if q != len(self._widgets) - 1:
+			if p + 1 == 17:
+				self.next_binary_byte['text'] = format(int('0x' + self._widgets[q+1][1]['text'], 16), '08b')
+			else:
+				self.next_binary_byte['text'] = format(int('0x' + self._widgets[q][p+1]['text'], 16), '08b')
 		else:
-			self._widgets[q - 1][15].config(fg='red')
-			_q = q - 1
-			_p = 15
-		self._widgets[_q][_p].focus_set()
-		if self.prev_selected != (None, None):
-			self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
-		self.prev_selected = (q, p)
-		print(self.prev_selected)
+			self.next_binary_byte['text'] = format(int('0x00', 16), '08b')
 
 	def _select_byte(self, q, p):
 		if self.prev_selected != (q, p):
 			self._widgets[q][p].focus_set()
 			self._widgets[q][p].config(fg='red')
-			self.binary_byte['text'] = format(int('0x' + self._widgets[q][p]['text'], 16), '08b')
-			if p + 1 == 17:
-				self.next_binary_byte['text'] = format(int('0x' + self._widgets[q+1][1]['text'], 16), '08b')
-			else:
-				self.next_binary_byte['text'] = format(int('0x' + self._widgets[q][p+1]['text'], 16), '08b')
 			if self.prev_selected != (None, None):
 				self._widgets[self.prev_selected[0]][self.prev_selected[1]].config(fg='black')
+			self._update_information_bytes(q, p)
 			self.prev_selected = (q, p)
 
 	def str_to_int(self, s):
@@ -204,7 +247,6 @@ class HexEditor(tk.Toplevel):
 		start = (self.str_to_int(self.header[0x9] + self.header[0x8]) + \
 			self.str_to_int(self.header[0x17] + self.header[0x16])) * 16 + \
 				self.str_to_int(self.header[0x15] + self.header[0x14])
-		print(hex(start))
 		self.add_rand_bytes(start - 0x210)
 
 		for _ in range(15):
@@ -221,7 +263,7 @@ class HexEditor(tk.Toplevel):
 		start = (self.str_to_int(self.header[0x9] + self.header[0x8]) + \
 			self.str_to_int(self.header[0x17] + self.header[0x16])) * 16 + \
 				self.str_to_int(self.header[0x15] + self.header[0x14])
-		print(hex(start))
+
 		self.add_rand_bytes(start - 0x210)
 
 		for i in range(len(self.tests)):
