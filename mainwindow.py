@@ -53,7 +53,6 @@ class Page2(Page):
 					consist_error = True
 				else:
 					complete_commands += 1
-		print(complete_commands)
 		if consist_error:
 			showinfo(title="Ошибка", message="Найдена ошибочная строка")
 		if complete_commands == len(self.parent._ans_p2):
@@ -204,7 +203,7 @@ class Page1(Page):
 
 	def next_btn_click(self):
 		self.pack_forget()
-		self.parent.p2.pack(side="bottom",fill="both", expand=True)
+		self.parent.p2.pack(side="bottom",fill="both")
 		self.parent.p2.show()
 
 class TestFrame(tk.Frame):
@@ -232,12 +231,6 @@ class TestFrame(tk.Frame):
 	def _build_ui(self):
 		self.p2 = Page2(self)
 		self.p1 = Page1(self)
-
-		#toolbar = tk.Frame(self, bd=1, relief=tk.RAISED)
-		#exitButton = tk.Button(toolbar, text="1", relief=tk.FLAT, command= lambda: webbrowser.open_new('manuals.pdf'))
-        #exitButton.image = eimg
-		#exitButton.pack(side=tk.LEFT, padx=2, pady=2)
-		#toolbar.pack(side=tk.TOP)
 
 		self.p1.pack(side="bottom",fill="both")
 

@@ -55,8 +55,8 @@ class HexEditor(tk.Toplevel):
 		self.resizable(False, False)
 		self.prev_selected = (None, None)
 		self.commands = []
-		#self.create_dump()
-		self.generate_test()
+		self.create_dump()
+		#self.generate_test()
 		self._build_ui()
 
 	def generate_ans_p1(self):
@@ -249,7 +249,7 @@ class HexEditor(tk.Toplevel):
 				self.str_to_int(self.header[0x15] + self.header[0x14])
 		self.add_rand_bytes(start - 0x210)
 
-		for _ in range(15):
+		for _ in range(40):
 			self.dump += self.rand_command()
 		self.commands += self.moves[-1]
 		self.dump += self.moves[-1]["dasm"]
