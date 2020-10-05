@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['/Users/max/Downloads/NEW_DA'],
+             pathex=['/media/max/Files/Univer work/SysPO'],
              binaries=[],
              datas=[('manuals.pdf', '.')],
              hiddenimports=[],
@@ -31,7 +31,3 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False )
-app = BUNDLE(exe,
-             name='main.app',
-             icon=None,
-             bundle_identifier=None)

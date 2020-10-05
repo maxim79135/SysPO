@@ -1,1 +1,0 @@
-([('main', '/Users/max/Downloads/NEW_DA/dist/main', 'EXECUTABLE')],)
