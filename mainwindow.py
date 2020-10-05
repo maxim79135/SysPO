@@ -48,8 +48,14 @@ class Page2(Page):
 		consist_error = None
 		for (i, com) in enumerate(writing_commands):
 			if i < len(self.parent._ans_p2):
-				print(i)
-				if com not in self.parent._ans_p2[i]["asm"]:
+				com = com.split(',')
+				if len(com) > 1:
+					com[0] += ','
+					new_com = com[0] + ' ' + str.lstrip(com[1])
+				else:
+					new_com = com[0]
+				print(new_com)
+				if new_com not in self.parent._ans_p2[i]["asm"]:
 					consist_error = True
 				else:
 					complete_commands += 1
