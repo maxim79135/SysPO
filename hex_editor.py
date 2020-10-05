@@ -249,9 +249,9 @@ class HexEditor(tk.Toplevel):
 				self.str_to_int(self.header[0x15] + self.header[0x14])
 		self.add_rand_bytes(start - 0x210)
 
-		for _ in range(40):
+		for _ in range(20):
 			self.dump += self.rand_command()
-		self.commands += self.moves[-1]
+		self.commands.append(self.moves[-1])
 		self.dump += self.moves[-1]["dasm"]
 		self.add_rand_bytes(60)
 

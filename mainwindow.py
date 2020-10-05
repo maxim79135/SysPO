@@ -220,11 +220,14 @@ class TestFrame(tk.Frame):
 		self._ans_p2 = self.parent._hexeditor.generate_ans_p2()
 		file.writelines('Задание 1:\n\n')
 		for i, val in enumerate(self._ans_p1):
-			file.writelines(str(i) + ': ' + str(val) + '\n')
+			file.writelines(self.p1.params[i][0] + ': ' + str(val) + '\n')
 		
+		adress = int(self._ans_p1[7][1], 16)
 		file.writelines('Задание 2:\n\n')
-		for i, val in enumerate(self._ans_p2):
-			file.writelines(str(i) + ': ' + str(val) + '\n')
+		for i in range(len(self._ans_p2)):
+			file.writelines(['{:0>4X}'.format(adress), ': ', str(self._ans_p2[i]['asm']), '\n'])
+			adress += len(self._ans_p2[i]['dasm'])
+
 
 		file.close()
 
