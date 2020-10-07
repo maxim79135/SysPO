@@ -130,7 +130,7 @@ class Page1(Page):
 		["Смещение сегмента кода", "Hex"],
 		["Значение указателя команд", "Hex"],
 		["Длина загружаемой части", "Dec"]]
-		self._completed_asks = 8
+		self._completed_asks = 0
 		self._build_ui()
 
 	def _check_ans(self, text, row):
@@ -217,13 +217,15 @@ class TestFrame(tk.Frame):
 		super().__init__(master=parent)
 		self.parent = parent
 		self._build_ui()
-		self.write_to_file()
-		
+		#self.write_to_file()
+		self._ans_p1 = self.parent._hexeditor.generate_ans_p1()
+		self._ans_p2 = self.parent._hexeditor.generate_ans_p2()
+
 			
 	def write_to_file(self):
 		file = open('Ответы.txt', 'w')
-		self._ans_p1 = self.parent._hexeditor.generate_ans_p1()
-		self._ans_p2 = self.parent._hexeditor.generate_ans_p2()
+		#self._ans_p1 = self.parent._hexeditor.generate_ans_p1()
+		#self._ans_p2 = self.parent._hexeditor.generate_ans_p2()
 		file.writelines('Задание 1:\n\n')
 		for i, val in enumerate(self._ans_p1):
 			file.writelines(self.p1.params[i][0] + ': ' + str(val) + '\n')
